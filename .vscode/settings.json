@@ -1,0 +1,8 @@
+{
+    "files.exclude": {
+        "**/node_modules": true
+    },
+    "editor.tabSize": 2,
+    "eslint.autoFixOnSave": true,
+    "editor.minimap.enabled": false
+}

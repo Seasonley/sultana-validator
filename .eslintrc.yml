@@ -1,0 +1,11 @@
+extends: airbnb-base
+parserOptions: 
+  ecmaVersion: 6
+  sourceType: module
+env: 
+  es6: true
+  browser: true
+  node: true
+  mocha: true
+rules:
+  semi: [error,never]
