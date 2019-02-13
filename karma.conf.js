@@ -16,9 +16,8 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'sultana-validator.js',
-      { pattern: '"test/*.js', included: false },
-      { pattern: '"tes/*.js', included: false },
-      { pattern: 'test/*.js', included: false }
+      'node_modules/should/should.js',
+      'test/browser.test.js',
     ],
 
 
@@ -53,7 +52,7 @@ module.exports = function(config) {
 
 
     // enable / disable watching file and executing tests whenever any file changes
-    autoWatch: false,
+    autoWatch: true,
 
 
     // start these browsers
