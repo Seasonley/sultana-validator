@@ -1,6 +1,8 @@
-import babel from 'rollup-plugin-babel';
-import json from 'rollup-plugin-json';
-import { author,description,license,name,version,homepage } from './package.json';
+import babel from 'rollup-plugin-babel'
+import json from 'rollup-plugin-json'
+import {
+  author, description, license, name, version, homepage,
+} from './package.json'
 
 export default {
   input: 'src/index.js',
@@ -8,7 +10,7 @@ export default {
     file: 'sultana-validator.js',
     format: 'umd',
     name: 'sultana-validator',
-    banner:`/*${name} v${version}
+    banner: `/*${name} v${version}
 ${description}
 ${license} License Copyright (c) 2018 ${author}
 ${homepage}*/`,
@@ -16,9 +18,9 @@ ${homepage}*/`,
   plugins: [
     json(),
     babel({
-      plugins: ["@babel/plugin-external-helpers"],
+      plugins: ['@babel/plugin-external-helpers'],
       externalHelpers: true,
-      exclude: 'node_modules/**' // 只编译我们的源代码
-    })
-  ]
+      exclude: 'node_modules/**',
+    }),
+  ],
 }

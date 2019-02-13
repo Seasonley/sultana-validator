@@ -3,14 +3,9 @@
         [
             "@babel/preset-env",
             {
-                "targets": {
-                    "esmodules": true,
-                    "ie":"11"
-                }
-            }
+                "targets": "> 0.25%, not dead"
+            },
         ]
     ],
-    "plugins": [
-        "@babel/plugin-external-helpers"
-    ]
+    "exclude": "node_modules/**"
 }

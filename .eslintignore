@@ -1,2 +1,4 @@
 lib
 sultana-validator.js
+sultana-validator.min.js
+karma.conf.js
