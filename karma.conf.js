@@ -17,7 +17,7 @@ module.exports = function(config) {
     files: [
       'sultana-validator.js',
       'node_modules/should/should.js',
-      'test/browser.test.js',
+      'test/validator.test.js',
     ],
 
 

@@ -9,3 +9,13 @@ env:
   mocha: true
 rules:
   semi: [error,never]
+  no-restricted-syntax: 0
+  one-var: 0
+  no-var: 0
+  prefer-const: 0
+  no-continue: 0
+  no-underscore-dangle: 0
+  one-var-declaration-per-line: 0
+  no-param-reassign: 0
+  no-use-before-define: 0
+  guard-for-in: 0
