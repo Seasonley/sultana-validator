@@ -1,8 +1,8 @@
 const assert = require('assert')
 const {
-  Validator, In, Not, Range, GreaterThan, LessThan, Equals,
+  In, Not, Range, GreaterThan, LessThan, Equals,
   Blank, Truthy, Required, InstanceOf, SubclassOf, Then, If,
-  Length, Contains, Each, validate,
+  Length, Contains, Each, validate, Pattern,
 } = require('../src/index.js')
 
 describe('TestValidator', () => {
@@ -69,6 +69,59 @@ describe('TestValidator', () => {
     assert(!validate(validator, intValue)[0])
     assert(!validate(validator, boolValue)[0])
   })
-  // it('test_required_validator', () => {
-  // })
+  it('test_in_validator', () => {
+    const validator = {
+      field: [In([1, 2, 3])],
+    }
+    const passes = { field: 1 }
+    const fails = { field: 4 }
+
+    assert(validate(validator, passes)[0])
+    assert(!validate(validator, fails)[0])
+  })
+  it('test_equals_validator', () => {
+    const validator = {
+      truthiness: [Equals('bar')],
+      falsiness: [Not(Equals('True'))],
+    }
+    const testCase = {
+      truthiness: 'bar',
+      falsiness: true,
+    }
+    assert(validate(validator, testCase)[0])
+  })
+  it('test_not_validator', () => {
+    const validator = {
+      test_truthy: [Not(Truthy)],
+      test_equals: [Not(Equals('one'))],
+      test_not_not: [Not(Not(Truthy))],
+      test_in: [Not(In(['one', 'two']))],
+      test_range: [Not(Range(1, 10))],
+      test_pattern: [Not(Pattern(/\d{3}/))],
+    }
+    const testCase = {
+      test_truthy: false,
+      test_equals: 'two',
+      test_not_not: true,
+      test_in: 'three',
+      test_range: 11,
+      test_pattern: 'abc',
+    }
+    assert(validate(validator, testCase)[0])
+  })
+  it('test_range_validator', () => {
+    const validator = {
+      in_range: [Range(1, 10)],
+      out_of_range: [Not(Range(1, 10))],
+      exclusive_in_range: [Range(1, 10, false)],
+      exclusive_out_of_range: [Not(Range(1, 10, false))],
+    }
+    const testCase = {
+      in_range: 1,
+      out_of_range: 11,
+      exclusive_in_range: 2,
+      exclusive_out_of_range: 1,
+    }
+    assert(validate(validator, testCase)[0])
+  })
 })

@@ -19,3 +19,4 @@ rules:
   no-param-reassign: 0
   no-use-before-define: 0
   guard-for-in: 0
+  no-shadow: 0

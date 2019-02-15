@@ -7,25 +7,6 @@ function Validator() {
   this.err_message = 'failed validation'
   this.not_message = 'failed validation'
 }
-function In() {}
-
-function Not(validator) {
-  function not(value) {
-    Validator.call(this)
-    this.err_message = this.err_message || 'failed validation'
-    this.not_message = this.not_message || 'failed validation'
-    return !validator(value)
-  }
-  return not
-}
-
-function Range() {}
-
-function GreaterThan() {}
-
-function LessThan() {}
-
-function Equals() {}
 
 function Blank(value) {
   Validator.call(this)
@@ -45,7 +26,57 @@ function Required(field, dictionary) {
   return field in dictionary
 }
 
-function InstanceOf() {}
+function Equals(obj) {
+  const objJson = JSON.stringify(obj)
+  return function Equals(value) {
+    Validator.call(this)
+    this.err_message = `must be equal to ${objJson}`
+    this.not_message = `must not be equal to ${objJson}`
+    return value === obj
+  }
+}
+
+function Not(validator) {
+  return function Not(value) {
+    Validator.call(this)
+    this.err_message = this.err_message || 'failed validation'
+    this.not_message = this.not_message || 'failed validation'
+    return !validator(value)
+  }
+}
+
+function Range(start, end, inclusive = true) {
+  return function Range(value) {
+    Validator.call(this)
+    this.err_message = `must fall between ${start} and ${end}`
+    this.not_message = `must not fall between ${start} and ${end}`
+    if (inclusive === true) {
+      return start <= value && value <= end
+    }
+    return start < value && value < end
+  }
+}
+function InstanceOf(baseClass) {
+  return function InstanceOf(value) {
+    Validator.call(this)
+    this.err_message = `must be an instance of ${baseClass.name} or its subclasses`
+    this.not_message = `must not be an instance of ${baseClass.name} or its subclasses`
+    return (value instanceof baseClass)
+  }
+}
+
+function In(collection) {
+  return function In(value) {
+    Validator.call(this)
+    this.err_message = 'must be one of' % collection
+    this.not_message = 'must not be one of' % collection
+    return collection.includes(value)
+  }
+}
+
+function GreaterThan() {}
+
+function LessThan() {}
 
 function SubclassOf() {}
 
@@ -58,6 +89,14 @@ function Length() {}
 function Contains() {}
 
 function Each() {}
+
+function Pattern(reg) {
+  return function Pattern(value) {
+    this.err_message = `must match regex ${reg.toString()}`
+    this.not_message = `must not match regex ${reg.toString()}`
+    return reg.test(value)
+  }
+}
 
 function _validateListHelper(validation, dictionary, key, errors) {
   for (let v of validation[key]) {
@@ -151,4 +190,5 @@ module.exports = {
   Contains,
   Each,
   validate,
+  Pattern,
 }
