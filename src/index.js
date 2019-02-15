@@ -1,3 +1,14 @@
+function template(strings, ...keys) {
+  return (function templ(...values) {
+    var dict = values[values.length - 1] || {}
+    var result = [strings[0]]
+    keys.forEach((key, i) => {
+      var value = Number.isInteger(key) ? values[key] : dict[key]
+      result.push(value, strings[i + 1])
+    })
+    return result.join('')
+  })
+}
 
 function ValidationResult(valid, errors) {
   return [valid, errors]
@@ -45,6 +56,42 @@ function Not(validator) {
   }
 }
 
+function In(collection) {
+  return function In(value) {
+    Validator.call(this)
+    this.err_message = 'must be one of' % collection
+    this.not_message = 'must not be one of' % collection
+    return collection.includes(value)
+  }
+}
+
+function InstanceOf(baseClass) {
+  return function InstanceOf(value) {
+    Validator.call(this)
+    this.err_message = `must be an instance of ${baseClass.name} or its subclasses`
+    this.not_message = `must not be an instance of ${baseClass.name} or its subclasses`
+    return (value instanceof baseClass)
+  }
+}
+
+function SubclassOf(baseClass) {
+  return function SubclassOf(subClass) {
+    Validator.call(this)
+    this.err_message = `must be a subclass of ${baseClass.name}`
+    this.not_message = `must not be a subclass of ${baseClass.name}`
+    return (subClass.prototype instanceof baseClass)
+  }
+}
+
+function Pattern(reg) {
+  return function Pattern(value) {
+    this.err_message = `must match regex ${reg.toString()}`
+    this.not_message = `must not match regex ${reg.toString()}`
+    return reg.test(value)
+  }
+}
+
+
 function Range(start, end, inclusive = true) {
   return function Range(value) {
     Validator.call(this)
@@ -56,47 +103,70 @@ function Range(start, end, inclusive = true) {
     return start < value && value < end
   }
 }
-function InstanceOf(baseClass) {
-  return function InstanceOf(value) {
+
+function GreaterThan(lowerBound, inclusive = false) {
+  return function Range(value) {
     Validator.call(this)
-    this.err_message = `must be an instance of ${baseClass.name} or its subclasses`
-    this.not_message = `must not be an instance of ${baseClass.name} or its subclasses`
-    return (value instanceof baseClass)
+    this.err_message = `must be greater than ${lowerBound}`
+    this.not_message = `must not be greater than ${lowerBound}`
+    if (inclusive === true) {
+      return lowerBound <= value
+    }
+    return lowerBound < value
   }
 }
 
-function In(collection) {
-  return function In(value) {
+function LessThan(upperBound, inclusive = false) {
+  return function Range(value) {
     Validator.call(this)
-    this.err_message = 'must be one of' % collection
-    this.not_message = 'must not be one of' % collection
-    return collection.includes(value)
+    this.err_message = `must be less than ${upperBound}`
+    this.not_message = `must not be less than ${upperBound}`
+    if (inclusive === true) {
+      return value <= upperBound
+    }
+    return value < upperBound
   }
 }
 
-function GreaterThan() {}
+function Length(minimum, maximum = 0) {
+  var messageTemplate = {
+      maximum: template`must be at most {0} elements in length`,
+      minimum: template`must be at least {0} elements in length`,
+      range: template`must{0}be between {1} and {2} elements in length`,
+    }, errMessage, notMessage
 
-function LessThan() {}
+  if (!minimum && !maximum) { throw new Error('Length must have a non-zero minimum or maximum parameter.') }
+  if (minimum < 0 || maximum < 0) { throw new Error('Length cannot have negative parameters.') }
 
-function SubclassOf() {}
+  if (minimum && maximum) {
+    errMessage = messageTemplate.range(' ', minimum, maximum)
+    notMessage = messageTemplate.range(' not ', minimum, maximum)
+  } else if (minimum) {
+    errMessage = messageTemplate.minimum(minimum)
+    notMessage = messageTemplate.maximum(minimum - 1)
+  } else if (maximum) {
+    errMessage = messageTemplate.maximum(maximum)
+    notMessage = messageTemplate.minimum(maximum + 1)
+  }
+  return function Length(value) {
+    Validator.call(this)
+    this.err_message = errMessage
+    this.not_message = notMessage
+    if (maximum) {
+      return minimum <= value.length <= maximum
+    }
+    return minimum <= value.length
+  }
+}
 
 function Then() {}
 
 function If() {}
 
-function Length() {}
-
 function Contains() {}
 
 function Each() {}
 
-function Pattern(reg) {
-  return function Pattern(value) {
-    this.err_message = `must match regex ${reg.toString()}`
-    this.not_message = `must not match regex ${reg.toString()}`
-    return reg.test(value)
-  }
-}
 
 function _validateListHelper(validation, dictionary, key, errors) {
   for (let v of validation[key]) {
@@ -121,7 +191,6 @@ function _validateListHelper(validation, dictionary, key, errors) {
     }
   }
 }
-
 
 function _validateAndStoreErrs(validator, dictionary, key, errors) {
   var valid, errs
@@ -171,6 +240,7 @@ function validate(validation, dictionary) {
   }
   return ValidationResult(Object.keys(errors).length === 0, errors)
 }
+
 module.exports = {
   Validator,
   In,

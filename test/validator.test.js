@@ -1,9 +1,12 @@
 const assert = require('assert')
 const {
-  In, Not, Range, GreaterThan, LessThan, Equals,
-  Blank, Truthy, Required, InstanceOf, SubclassOf, Then, If,
-  Length, Contains, Each, validate, Pattern,
+  In, Not, Range, Equals, Blank, Truthy, Required,
+  InstanceOf, SubclassOf, GreaterThan, LessThan,
+  Length, Pattern, Then, If, Contains, Each, validate,
 } = require('../src/index.js')
+
+class BaseClass {}
+class SubClass extends BaseClass {}
 
 describe('TestValidator', () => {
   it('test_truthy_validator', () => {
@@ -123,5 +126,107 @@ describe('TestValidator', () => {
       exclusive_out_of_range: 1,
     }
     assert(validate(validator, testCase)[0])
+  })
+  it('test_greaterthan_validator', () => {
+    const validator = {
+      greater_than: [GreaterThan(0)],
+      lower_than: [Not(GreaterThan(0))],
+      equal_exclusive: [Not(GreaterThan(0))],
+      equal_inclusive: [GreaterThan(0, true)],
+    }
+    const testCase = {
+      greater_than: 1,
+      lower_than: -1,
+      equal_exclusive: 0,
+      equal_inclusive: 0,
+    }
+    assert(validate(validator, testCase)[0])
+  })
+  it('test_lessthan_validator', () => {
+    const validator = {
+      less_than: [LessThan(0)],
+      greater_than: [Not(LessThan(0))],
+      equal_exclusive: [Not(LessThan(0))],
+      equal_inclusive: [LessThan(0, true)],
+    }
+    const testCase = {
+      less_than: -1,
+      greater_than: 1,
+      equal_exclusive: 0,
+      equal_inclusive: 0,
+    }
+    assert(validate(validator, testCase)[0])
+  })
+  it('test_instanceof_validator', () => {
+    const validator = {
+      classy: [Required, InstanceOf(SubClass)],
+      subclassy: [Required, InstanceOf(BaseClass)],
+      not_classy: [Required, Not(InstanceOf(SubClass))],
+      not_subclassy: [Required, Not(InstanceOf(BaseClass))],
+    }
+    const testCase = {
+      classy: new SubClass(),
+      subclassy: new BaseClass(),
+      not_classy: Object(),
+      not_subclassy: 3,
+    }
+    assert(validate(validator, testCase)[0])
+  })
+  it('test_subclassof_validator', () => {
+    const validator = {
+      is_subclass: [Required, SubclassOf(BaseClass)],
+      not_subclass: [Required, Not(SubclassOf(BaseClass))],
+    }
+    const testCase = {
+      is_subclass: SubClass,
+      not_subclass: Number,
+    }
+    assert(validate(validator, testCase)[0])
+  })
+  it('test_greaterthan_validator', () => {
+    const validator = {
+      greater_than: [GreaterThan(0)],
+      lower_than: [Not(GreaterThan(0))],
+      equal_exclusive: [Not(GreaterThan(0))],
+      equal_inclusive: [GreaterThan(0, true)],
+    }
+    const testCase = {
+      greater_than: 1,
+      lower_than: -1,
+      equal_exclusive: 0,
+      equal_inclusive: 0,
+    }
+    assert(validate(validator, testCase)[0])
+  })
+  it('test_lessthan_validator', () => {
+    const validator = {
+      less_than: [LessThan(0)],
+      greater_than: [Not(LessThan(0))],
+      equal_exclusive: [Not(LessThan(0))],
+      equal_inclusive: [LessThan(0, true)],
+    }
+    const testCase = {
+      less_than: -1,
+      greater_than: 1,
+      equal_exclusive: 0,
+      equal_inclusive: 0,
+    }
+    assert(validate(validator, testCase)[0])
+  })
+  it('test_length_validator', () => {
+    const passes = {
+      foo: [Required, Length(5), Length(1, 5)],
+      bar: [Required, Length(0, 10)],
+    }
+    const fails = {
+      foo: [Required, Length(8), Length(1, 11)],
+      bar: [Required, Length(0, 3)],
+    }
+    const testCase = {
+      foo: '12345',
+      bar: [1, 2, 3, 4, 5],
+    }
+    assert(validate(passes, testCase)[0])
+    assert(!validate(fails, testCase)[0])
   })
 })
