@@ -13,23 +13,23 @@ function template(strings, ...keys) {
 function ValidationResult(valid, errors) {
   return [valid, errors]
 }
-
+let errMsg = '', notMsg = ''
 function Validator() {
-  this.err_message = 'failed validation'
-  this.not_message = 'failed validation'
+  errMsg = 'failed validation'
+  notMsg = 'failed validation'
 }
 
 function Blank(value) {
   Validator.call(this)
-  this.err_message = 'must be an empty string'
-  this.not_message = 'must not be an empty string'
+  errMsg = 'must be an empty string'
+  notMsg = 'must not be an empty string'
   return value === ''
 }
 
 function Truthy(value) {
   Validator.call(this)
-  this.err_message = 'must be True-equivalent value'
-  this.not_message = 'must be False-equivalent value'
+  errMsg = 'must be True-equivalent value'
+  notMsg = 'must be False-equivalent value'
   return !!value
 }
 
@@ -39,10 +39,9 @@ function Required(field, dictionary) {
 
 function Equals(obj) {
   const objJson = JSON.stringify(obj)
+  errMsg = `must be equal to ${objJson}`
+  notMsg = `must not be equal to ${objJson}`
   return function Equals(value) {
-    Validator.call(this)
-    this.err_message = `must be equal to ${objJson}`
-    this.not_message = `must not be equal to ${objJson}`
     return value === obj
   }
 }
@@ -50,8 +49,8 @@ function Equals(obj) {
 function Not(validator) {
   return function Not(value) {
     Validator.call(this)
-    this.err_message = this.err_message || 'failed validation'
-    this.not_message = this.not_message || 'failed validation'
+    errMsg = errMsg || 'failed validation'
+    notMsg = notMsg || 'failed validation'
     return !validator(value)
   }
 }
@@ -59,8 +58,8 @@ function Not(validator) {
 function In(collection) {
   return function In(value) {
     Validator.call(this)
-    this.err_message = 'must be one of' % collection
-    this.not_message = 'must not be one of' % collection
+    errMsg = `must be one of ${JSON.stringify(collection)}`
+    notMsg = `must not be one of ${JSON.stringify(collection)}`
     return collection.includes(value)
   }
 }
@@ -68,8 +67,8 @@ function In(collection) {
 function InstanceOf(baseClass) {
   return function InstanceOf(value) {
     Validator.call(this)
-    this.err_message = `must be an instance of ${baseClass.name} or its subclasses`
-    this.not_message = `must not be an instance of ${baseClass.name} or its subclasses`
+    errMsg = `must be an instance of ${baseClass.name} or its subclasses`
+    notMsg = `must not be an instance of ${baseClass.name} or its subclasses`
     return (value instanceof baseClass)
   }
 }
@@ -77,16 +76,16 @@ function InstanceOf(baseClass) {
 function SubclassOf(baseClass) {
   return function SubclassOf(subClass) {
     Validator.call(this)
-    this.err_message = `must be a subclass of ${baseClass.name}`
-    this.not_message = `must not be a subclass of ${baseClass.name}`
+    errMsg = `must be a subclass of ${baseClass.name}`
+    notMsg = `must not be a subclass of ${baseClass.name}`
     return (subClass.prototype instanceof baseClass)
   }
 }
 
 function Pattern(reg) {
   return function Pattern(value) {
-    this.err_message = `must match regex ${reg.toString()}`
-    this.not_message = `must not match regex ${reg.toString()}`
+    errMsg = `must match regex ${reg.toString()}`
+    notMsg = `must not match regex ${reg.toString()}`
     return reg.test(value)
   }
 }
@@ -95,8 +94,8 @@ function Pattern(reg) {
 function Range(start, end, inclusive = true) {
   return function Range(value) {
     Validator.call(this)
-    this.err_message = `must fall between ${start} and ${end}`
-    this.not_message = `must not fall between ${start} and ${end}`
+    errMsg = `must fall between ${start} and ${end}`
+    notMsg = `must not fall between ${start} and ${end}`
     if (inclusive === true) {
       return start <= value && value <= end
     }
@@ -107,8 +106,8 @@ function Range(start, end, inclusive = true) {
 function GreaterThan(lowerBound, inclusive = false) {
   return function Range(value) {
     Validator.call(this)
-    this.err_message = `must be greater than ${lowerBound}`
-    this.not_message = `must not be greater than ${lowerBound}`
+    errMsg = `must be greater than ${lowerBound}`
+    notMsg = `must not be greater than ${lowerBound}`
     if (inclusive === true) {
       return lowerBound <= value
     }
@@ -119,8 +118,8 @@ function GreaterThan(lowerBound, inclusive = false) {
 function LessThan(upperBound, inclusive = false) {
   return function Range(value) {
     Validator.call(this)
-    this.err_message = `must be less than ${upperBound}`
-    this.not_message = `must not be less than ${upperBound}`
+    errMsg = `must be less than ${upperBound}`
+    notMsg = `must not be less than ${upperBound}`
     if (inclusive === true) {
       return value <= upperBound
     }
@@ -130,9 +129,9 @@ function LessThan(upperBound, inclusive = false) {
 
 function Length(minimum, maximum = 0) {
   var messageTemplate = {
-      maximum: template`must be at most {0} elements in length`,
-      minimum: template`must be at least {0} elements in length`,
-      range: template`must{0}be between {1} and {2} elements in length`,
+      maximum: template`must be at most ${0} elements in length`,
+      minimum: template`must be at least ${0} elements in length`,
+      range: template`must${0}be between ${1} and ${2} elements in length`,
     }, errMessage, notMessage
 
   if (!minimum && !maximum) { throw new Error('Length must have a non-zero minimum or maximum parameter.') }
@@ -150,8 +149,8 @@ function Length(minimum, maximum = 0) {
   }
   return function Length(value) {
     Validator.call(this)
-    this.err_message = errMessage
-    this.not_message = notMessage
+    errMsg = errMessage
+    notMsg = notMessage
     if (maximum) {
       return minimum <= value.length <= maximum
     }
@@ -159,13 +158,63 @@ function Length(minimum, maximum = 0) {
   }
 }
 
-function Then() {}
+function Contains(contained) {
+  return function Contains(container) {
+    Validator.call(this)
+    errMsg = `must contain ${contained}`
+    notMsg = `must not contain ${contained}`
+    if (container instanceof Array || typeof container === 'string') {
+      return container.includes(contained)
+    }
+    return contained in container
+  }
+}
 
-function If() {}
+function Then(validation) {
+  return function Then(dictionary) {
+    return validate(validation, dictionary)
+  }
+}
 
-function Contains() {}
+function If(validator, thenClause) {
+  function If(value, dictionary) {
+    var conditional = false,
+      dependent = function dependent() {}
+    Validator.call(this)
+    if (validator(value)) {
+      conditional = true
+      dependent = thenClause(dictionary)
+    }
+    return [conditional, dependent]
+  }
+  If.prototype.isIf = true
+  return If
+}
 
-function Each() {}
+
+function Each(validations) {
+  return function Each(container) {
+    let errors = [], valid, err
+    if (validations instanceof Array) {
+      container.forEach((item) => {
+        validations.forEach((v) => {
+          valid = v(item)
+          if (!valid) {
+            errors.push(`all values ${errMsg}`)
+          }
+        })
+      })
+    } else if (Object.prototype.toString.call(validations) === '[object Object]') {
+      for (let [index, item] of Object.entries(container)) {
+        [valid, err] = validate(validations, item)
+        if (!valid) {
+          errors[index] = err
+        }
+      }
+    }
+    return [errors.length === 0, errors]
+  }
+}
 
 
 function _validateListHelper(validation, dictionary, key, errors) {
@@ -179,9 +228,9 @@ function _validateListHelper(validation, dictionary, key, errors) {
         continue
       }
       if (v !== Required) {
-        if (v instanceof If) {
+        if ('isIf' in v.prototype) {
           let [conditional, dependent] = v(dictionary[key], dictionary)
-          if (conditional && dependent[1]) {
+          if (conditional && Object.keys(dependent[1]).length > 0) {
             errors[key].push(dependent[1])
           }
         } else {
@@ -197,7 +246,7 @@ function _validateAndStoreErrs(validator, dictionary, key, errors) {
   try {
     valid = validator(dictionary[key])
   } catch (error) {
-    valid = [false, validator.err_message]
+    valid = [false, errMsg]
   }
 
   if (valid instanceof Array) {
@@ -208,7 +257,7 @@ function _validateAndStoreErrs(validator, dictionary, key, errors) {
       errors[key].push(errs)
     }
   } else if (!valid) {
-    errors[key].push(validator.err_message || 'failed validation')
+    errors[key].push(errMsg || 'failed validation')
   }
 }
 

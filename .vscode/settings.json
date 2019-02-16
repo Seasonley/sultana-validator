@@ -4,5 +4,8 @@
     },
     "editor.tabSize": 2,
     "eslint.autoFixOnSave": true,
-    "editor.minimap.enabled": false
+    "editor.minimap.enabled": false,
+    "mocha.requires": [
+        "@babel/register"
+    ],
 }

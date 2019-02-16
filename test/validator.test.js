@@ -213,6 +213,27 @@ describe('TestValidator', () => {
     }
     assert(validate(validator, testCase)[0])
   })
+  it('test_contains_validator', () => {
+    const validation = {
+      foo: [Required, Contains('1')],
+      qux: [Required, Not(Contains('1'))],
+    }
+    const testCaseArray = {
+      foo: ['1', '2', '3'],
+      qux: ['2', '3', '4'],
+    }
+    const testCaseObject = {
+      foo: { 1: 'one', 2: 'two' },
+      qux: { 2: 'two', 3: 'three' },
+    }
+    const testCaseSubstring = {
+      foo: 'test1case',
+      qux: 'barbaz',
+    }
+    assert(validate(validation, testCaseArray)[0])
+    assert(validate(validation, testCaseObject)[0])
+    assert(validate(validation, testCaseSubstring)[0])
+  })
   it('test_length_validator', () => {
     const passes = {
       foo: [Required, Length(5), Length(1, 5)],
@@ -228,5 +249,58 @@ describe('TestValidator', () => {
     }
     assert(validate(passes, testCase)[0])
     assert(!validate(fails, testCase)[0])
+  })
+  it('test_conditional_validator', () => {
+    const passes = {
+      if_true_passes: [Required, If(Equals(1), Then({ dependent_passes: [Equals(1)] }))],
+      if_false_passes: [Required, If(Equals(1), Then({ dependent_fails: [Equals(1)] }))],
+    }
+    const fails = {
+      if_true_fails: [Required, If(Equals(1), Then({ dependent_fails: [Equals(1)] }))],
+    }
+    const testCase = {
+      if_true_passes: 1,
+      if_false_passes: 2,
+      if_true_fails: 1,
+      dependent_passes: 1,
+      dependent_fails: 2,
+    }
+    assert(validate(passes, testCase)[0])
+    assert(!validate(fails, testCase)[0])
+  })
+
+  it('test_each_validator', () => {
+    const passes = {
+      foo: [1, 2, 3, 4, 5, 6],
+      bar: [{ qux: 1 }, { qux: 2 }],
+    }
+    const fails = {
+      foo: [1, 2, 3, 4, 5, 11],
+      bar: [{ qux: 3 }, { qux: 4, zot: 5 }],
+    }
+    const validation = {
+      foo: [Required, Each([Range(0, 10)])],
+      bar: [Required, Each({
+        qux: [Required, Range(0, 2)],
+        zot: [In([1, 2, 3])],
+      }),
+      ],
+    }
+    var [valid, errors] = validate(validation, passes)
+    assert(valid)
+    assert.equal(Object.keys(errors).length, 0);
+    [valid, errors] = validate(validation, fails)
+    assert(!valid)
+    assert.equal(Object.keys(errors).length, 2)
+    assert.deepEqual(errors, {
+      foo: ['all values must fall between 0 and 10'],
+      bar: [
+        { qux: ['must fall between 0 and 2'] },
+        {
+          qux: ['must fall between 0 and 2'],
+          zot: ['must be one of [1,2,3]'],
+        },
+      ],
+    })
   })
 })
