@@ -290,7 +290,7 @@ function validate(validation, dictionary) {
   return ValidationResult(Object.keys(errors).length === 0, errors)
 }
 
-module.exports = {
+export {
   Validator,
   In,
   Not,

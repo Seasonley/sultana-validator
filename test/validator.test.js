@@ -1,9 +1,9 @@
-const assert = require('assert')
-const {
+import assert from 'assert'
+import {
   In, Not, Range, Equals, Blank, Truthy, Required,
   InstanceOf, SubclassOf, GreaterThan, LessThan,
   Length, Pattern, Then, If, Contains, Each, validate,
-} = require('../src/index.js')
+} from '../src/index'
 
 class BaseClass {}
 class SubClass extends BaseClass {}
