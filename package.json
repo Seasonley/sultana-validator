@@ -27,7 +27,6 @@
     "rollup": "^1.1.2",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-json": "^3.1.0",
-    "should": "^13.2.3",
     "uglify-js": "^3.4.9"
   },
   "scripts": {
@@ -38,7 +37,8 @@
     "pretest": "npm run lint && npm run build",
     "test": "mocha --require @babel/register --reporter dot",
     "test:browser": "karma start",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0"
+    "changelog": "conventional-changelog -p angular -i doc/CHANGELOG.md -s -r 0",
+    "doc":"jsdoc2md src/index.js > doc/DOCUMENTATION.md"
   },
   "repository": {
     "type": "git",
