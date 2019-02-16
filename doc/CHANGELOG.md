@@ -1,4 +1,4 @@
-## 0.0.3 (2019-02-16)
+# [0.1.0](https://github.com/Seasonley/validator.js/compare/2cf67fa...v0.1.0) (2019-02-16)
 
 
 ### Features
