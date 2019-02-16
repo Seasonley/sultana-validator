@@ -9,7 +9,7 @@ A library for validating as same as <a href="https://github.com/mansam/validator
 
 # Documentation
 
-This README has some basic usage information, but more detailed documentation may be found at <a href="https://github.com/Seasonley/validator.js/blob/master/doc/DOCMEnTATION">here</a>.
+This README has some basic usage information, but more detailed documentation may be found at <a href="https://github.com/Seasonley/sultana-validator/blob/master/doc/DOCUMENTATION.md">here</a>.
 
 # Install
 
@@ -27,7 +27,7 @@ import {
 // let's say that my dictionary needs to meet the following rules...
 let rules = {
   foo: [Required, Equals(123)],
-  bar: [Required, Truthy()],
+  bar: [Required, Truthy],
   baz: [In(['spam', 'eggs', 'bacon'])],
   qux: [Not(Range(1, 100))], // by default, Range is inclusive
 }
@@ -69,7 +69,9 @@ validate(rules, fails)
 
 # Change Log
 
-<a href="https://github.com/Seasonley/validator.js/blob/master/doc/CHANGELOG.md">click here.</a>
+<a href="https://github.com/Seasonley/sultana-validator/blob/master/doc/CHANGELOG.md">click here.</a>
+
+
 
 [downloads-image]: http://img.shields.io/npm/dm/sultana-validator.svg
 [npm-url]: https://npmjs.org/package/sultana-validator
