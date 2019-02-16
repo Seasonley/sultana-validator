@@ -7,9 +7,11 @@
 A library for validating as same as <a href="https://github.com/mansam/validator.py">validator.py</a>
 
 # Documentation
+
 This README has some basic usage information, but more detailed documentation may be found at <a href="https://github.com/Seasonley/validator.js/blob/master/doc/DOCMEnTATION">here</a>.
 
-#Install
+# Install
+
 ```bash
 npm install sultana-vaidator
 ```
@@ -57,10 +59,12 @@ validate(rules, fails)
 
 ```
 
-#License
+# License
+
 [MIT](https://github.com/Seasonley/validator.js/blob/master/LICENSE)
 
-#Change Log
+# Change Log
+
 <a href="https://github.com/Seasonley/validator.js/blob/master/doc/CHANGELOG.md">click here.</a>
 
 [downloads-image]: http://img.shields.io/npm/dm/sultana-validator.svg
