@@ -3,12 +3,14 @@
 [![NPM version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
 [![Downloads][downloads-image]][npm-url]
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FSeasonley%2Fsultana-validator.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FSeasonley%2Fsultana-validator?ref=badge_shield)
+
 
 A library for validating as same as <a href="https://github.com/mansam/validator.py">validator.py</a>
 
 # Documentation
 
-This README has some basic usage information, but more detailed documentation may be found at <a href="https://github.com/Seasonley/validator.js/blob/master/doc/DOCMEnTATION">here</a>.
+This README has some basic usage information, but more detailed documentation may be found at <a href="https://github.com/Seasonley/sultana-validator/blob/master/doc/DOCUMENTATION.md">here</a>.
 
 # Install
 
@@ -65,7 +67,13 @@ validate(rules, fails)
 
 # Change Log
 
-<a href="https://github.com/Seasonley/validator.js/blob/master/doc/CHANGELOG.md">click here.</a>
+<a href="https://github.com/Seasonley/sultana-validator/blob/master/doc/CHANGELOG.md">click here.</a>
+
+
+
+<a href="https://github.com/overtrue/wechat/graphs/contributors"><img src="https://opencollective.com/wechat/contributors.svg?width=890" /></a>
+
+
 
 [downloads-image]: http://img.shields.io/npm/dm/sultana-validator.svg
 [npm-url]: https://npmjs.org/package/sultana-validator
