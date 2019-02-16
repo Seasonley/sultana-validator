@@ -1,4 +1,4 @@
-# sultana-validator.js
+# sultana-validator
 
 [![NPM version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
