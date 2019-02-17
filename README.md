@@ -63,7 +63,7 @@ validate(rules, fails)
 
 # License
 
-[MIT](https://github.com/Seasonley/validator.js/blob/master/LICENSE)
+[MIT](https://github.com/Seasonley/sultana-validator/blob/master/LICENSE)
 
 # Change Log
 
@@ -75,5 +75,5 @@ validate(rules, fails)
 [npm-url]: https://npmjs.org/package/sultana-validator
 [npm-image]: http://img.shields.io/npm/v/sultana-validator.svg
 
-[travis-url]: https://travis-ci.org/Seasonley/validator.js
-[travis-image]: http://img.shields.io/travis/Seasonley/validator.js.svg
+[travis-url]: https://travis-ci.org/Seasonley/sultana-validator
+[travis-image]: http://img.shields.io/travis/Seasonley/sultana-validator.svg

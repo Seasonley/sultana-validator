@@ -36,7 +36,7 @@
     "minify": "uglifyjs sultana-validator.js -o sultana-validator.min.js --compress --mangle --comments /Copyright/",
     "build": "rollup --config rollup.config.js && npm run minify",
     "pretest": "npm run lint && npm run build",
-    "test": "mocha --require @babel/register --reporter dot",
+    "test": "nyc mocha --require @babel/register --reporter dot",
     "test:browser": "karma start",
     "changelog": "conventional-changelog -p angular -i doc/CHANGELOG.md -s -r 0",
     "makedoc": "jsdoc2md src/index.js > doc/DOCUMENTATION.md",
@@ -44,7 +44,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Seasonley/validator.js.git"
+    "url": "git+https://github.com/Seasonley/sultana-validator.git"
   },
   "keywords": [
     "validator"
@@ -52,9 +52,9 @@
   "author": "seasonley",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Seasonley/validator.js/issues"
+    "url": "https://github.com/Seasonley/sultana-validator/issues"
   },
-  "homepage": "https://github.com/Seasonley/validator.js",
+  "homepage": "https://github.com/Seasonley/sultana-validator",
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
