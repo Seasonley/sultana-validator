@@ -1,7 +1,7 @@
 /*sultana-validator v0.1.0
 A library for validating as same as validator.py
 MIT License Copyright (c) 2018 seasonley
-https://github.com/Seasonley/validator.js*/
+https://github.com/Seasonley/sultana-validator*/
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
