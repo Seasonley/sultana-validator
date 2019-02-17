@@ -1,4 +1,4 @@
-# sultana-validator
+# [ [-ิ_•ิ] sultana-validator](https://npmjs.org/package/sultana-validator)
 
 [![NPM](https://nodei.co/npm/sultana-validator.png)](https://npmjs.org/package/sultana-validator)
 
@@ -10,17 +10,17 @@
 
 A library for validating as same as <a href="https://github.com/mansam/validator.py">validator.py</a>
 
-# Documentation
+## Documentation
 
 This README has some basic usage information, but more detailed documentation may be found at <a href="https://github.com/Seasonley/sultana-validator/blob/master/doc/DOCUMENTATION.md">here</a>.
 
-# Install
+## Install
 
 ```bash
 npm install sultana-vaidator
 ```
 
-# Usage Example
+## Usage Example
 
 ```javascript
 import {
@@ -63,14 +63,14 @@ validate(rules, fails)
 
 ```
 
-# License
+## License
 
 [MIT](https://github.com/Seasonley/sultana-validator/blob/master/LICENSE)
 
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FSeasonley%2Fsultana-validator.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FSeasonley%2Fsultana-validator?ref=badge_large)
 
-# Change Log
+## Change Log
 
 <a href="https://github.com/Seasonley/sultana-validator/blob/master/doc/CHANGELOG.md">click here for more details.</a>
 
