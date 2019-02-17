@@ -1,5 +1,7 @@
 # sultana-validator
 
+[![NPM](https://nodei.co/npm/sultana-validator.png)](https://npmjs.org/package/sultana-validator)
+
 [![NPM version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
 [![Coverage Status](https://coveralls.io/repos/github/Seasonley/sultana-validator/badge.svg?branch=master)](https://coveralls.io/github/Seasonley/sultana-validator?branch=master)
@@ -70,7 +72,7 @@ validate(rules, fails)
 
 # Change Log
 
-<a href="https://github.com/Seasonley/sultana-validator/blob/master/doc/CHANGELOG.md">click here.</a>
+<a href="https://github.com/Seasonley/sultana-validator/blob/master/doc/CHANGELOG.md">click here for more details.</a>
 
 
 
