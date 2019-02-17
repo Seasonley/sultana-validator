@@ -5,7 +5,6 @@
 [![Downloads][downloads-image]][npm-url]
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FSeasonley%2Fsultana-validator.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FSeasonley%2Fsultana-validator?ref=badge_shield)
 
-
 A library for validating as same as <a href="https://github.com/mansam/validator.py">validator.py</a>
 
 # Documentation
@@ -64,6 +63,9 @@ validate(rules, fails)
 # License
 
 [MIT](https://github.com/Seasonley/sultana-validator/blob/master/LICENSE)
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FSeasonley%2Fsultana-validator.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FSeasonley%2Fsultana-validator?ref=badge_large)
 
 # Change Log
 
