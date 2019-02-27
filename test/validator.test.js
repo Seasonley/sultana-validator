@@ -1,12 +1,13 @@
-import assert from 'assert'
-import {
+const assert = require('assert')
+
+const {
   In, Not, Range, Equals, Blank, Truthy, Required,
   InstanceOf, SubclassOf, GreaterThan, LessThan,
   Length, Pattern, Then, If, Contains, Each, validate,
-} from '../src/index'
+} = require('../src/index.js')
 
-class BaseClass {}
-class SubClass extends BaseClass {}
+class BaseClass { }
+class SubClass extends BaseClass { }
 
 describe('TestValidator', () => {
   it('test_truthy_validator', () => {
@@ -300,6 +301,75 @@ describe('TestValidator', () => {
           qux: ['must fall between 0 and 2'],
           zot: ['must be one of [1,2,3]'],
         },
+      ],
+    })
+  })
+
+  it('test_nested_validations', () => {
+    const passes = {
+      foo: [Required, Equals(1)],
+      bar: [
+        Required,
+        {
+          baz: [Required, Equals(2)],
+          qux: [Required, {
+            quux: [Required, Equals(3)],
+          }],
+        },
+      ],
+    }
+    const fails = {
+      foo: [Required, Equals(2)],
+      bar: [
+        Required,
+        {
+          baz: [Required, Equals(3)],
+          qux: [Required, {
+            quux: [Required, Equals(4)],
+          }],
+        },
+      ],
+    }
+    const testCase = {
+      foo: 1,
+      bar: {
+        baz: 2,
+        qux: {
+          quux: 3,
+        },
+      },
+    }
+    assert(validate(passes, testCase)[0])
+    assert(!validate(fails, testCase)[0])
+  })
+
+  it('test_optional_validations', () => {
+    const optionalValidation = {
+      foo: [Equals(1)],
+      bar: [{
+        baz: [Equals(2)],
+        qux: [Equals(3)],
+      }],
+    }
+    const testCase = {
+      bar: { baz: 2 },
+    }
+    assert(validate(optionalValidation, testCase)[0])
+  })
+
+  it('test_exception_handling', () => {
+    const validation = {
+      foo: [Required, Length(5), InstanceOf(Array)],
+    }
+    const testCase = {
+      foo: 5,
+    }
+    let [valid, errors] = validate(validation, testCase)
+    assert(!valid)
+    assert.deepEqual(errors, {
+      foo: [
+        'must be at least 5 elements in length',
+        'must be an instance of Array or its subclasses',
       ],
     })
   })

@@ -443,7 +443,7 @@ function Then(validation) {
 function If(validator, thenClause) {
   function If(value, dictionary) {
     var conditional = false,
-      dependent = function dependent() {}
+      dependent = function dependent() { }
     Validator.call(this)
     if (validator(value)) {
       conditional = true
@@ -520,15 +520,15 @@ function Each(validations) {
 function _validateListHelper(validation, dictionary, key, errors) {
   for (let v of validation[key]) {
     if (key in dictionary) {
-      if (v instanceof Array) {
-        let [, nestedErrors] = validate(v, dictionary[key])
-        if (nestedErrors) {
-          errors[key].append(nestedErrors)
+      if (Object.prototype.toString.call(v) === '[object Object]') {
+        let [valid, nestedErrors] = validate(v, dictionary[key])
+        if (!valid) {
+          errors[key].push(nestedErrors)
         }
         continue
       }
       if (v !== Required) {
-        if ('isIf' in v.prototype) {
+        if (v instanceof Function && 'isIf' in v.prototype) {
           let [conditional, dependent] = v(dictionary[key], dictionary)
           if (conditional && Object.keys(dependent[1]).length > 0) {
             errors[key].push(dependent[1])
@@ -616,7 +616,7 @@ function validate(validation, dictionary) {
   return ValidationResult(Object.keys(errors).length === 0, errors)
 }
 
-export {
+module.exports = {
   Validator,
   In,
   Not,
