@@ -8,4 +8,5 @@
         ]
     ],
     "exclude": "node_modules/**",
+    "sourceMaps": true
 }

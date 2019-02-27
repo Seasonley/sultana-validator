@@ -11,10 +11,12 @@
       "name": "Debug Program",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "trace": true,
-      "args":[
-        "--require","@babel/register",
+      "args": [
+        // "--require",
+        // "@babel/register",
         "test/validator.test.js",
-        "--colors", "--no-timeouts",
+        "--colors",
+        "--no-timeouts",
       ],
       "outFiles": [
         "${workspaceFolder}/src/index.js"
