@@ -2,11 +2,10 @@
 A library for validating as same as validator.py
 MIT License Copyright (c) 2018 seasonley
 https://github.com/Seasonley/sultana-validator*/
-(function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (global = global || self, factory(global['sultana-validator'] = {}));
-}(this, function (exports) { 'use strict';
+(function (factory) {
+  typeof define === 'function' && define.amd ? define(factory) :
+  factory();
+}(function () { 'use strict';
 
   function _templateObject3() {
     var data = babelHelpers.taggedTemplateLiteral(["must", "be between ", " and ", " elements in length"]);
@@ -513,13 +512,6 @@ https://github.com/Seasonley/sultana-validator*/
       parameter to this function passes,
       then a second set of rules will be
       applied to the dictionary.
-   @example
-   var validations = {
-    foo: [If(Equals(1), Then({bar: [Equals(2)]}))]
-    }
-    passes = {foo: 1, bar: 2}
-    also_passes = {foo: 2, bar: 3}
-    fails = {foo: 1, bar: 3}
   */
 
 
@@ -633,20 +625,21 @@ https://github.com/Seasonley/sultana-validator*/
         var v = _step.value;
 
         if (key in dictionary) {
-          if (v instanceof Array) {
+          if (Object.prototype.toString.call(v) === '[object Object]') {
             var _validate3 = validate(v, dictionary[key]),
                 _validate4 = babelHelpers.slicedToArray(_validate3, 2),
+                valid = _validate4[0],
                 nestedErrors = _validate4[1];
 
-            if (nestedErrors) {
-              errors[key].append(nestedErrors);
+            if (!valid) {
+              errors[key].push(nestedErrors);
             }
 
             continue;
           }
 
           if (v !== Required) {
-            if ('isIf' in v.prototype) {
+            if (v instanceof Function && 'isIf' in v.prototype) {
               var _v = v(dictionary[key], dictionary),
                   _v2 = babelHelpers.slicedToArray(_v, 2),
                   conditional = _v2[0],
@@ -767,26 +760,26 @@ https://github.com/Seasonley/sultana-validator*/
     return ValidationResult(Object.keys(errors).length === 0, errors);
   }
 
-  exports.Validator = Validator;
-  exports.In = In;
-  exports.Not = Not;
-  exports.Range = Range;
-  exports.GreaterThan = GreaterThan;
-  exports.LessThan = LessThan;
-  exports.Equals = Equals;
-  exports.Blank = Blank;
-  exports.Truthy = Truthy;
-  exports.Required = Required;
-  exports.InstanceOf = InstanceOf;
-  exports.SubclassOf = SubclassOf;
-  exports.Then = Then;
-  exports.If = If;
-  exports.Length = Length;
-  exports.Contains = Contains;
-  exports.Each = Each;
-  exports.validate = validate;
-  exports.Pattern = Pattern;
-
-  Object.defineProperty(exports, '__esModule', { value: true });
+  module.exports = {
+    Validator: Validator,
+    In: In,
+    Not: Not,
+    Range: Range,
+    GreaterThan: GreaterThan,
+    LessThan: LessThan,
+    Equals: Equals,
+    Blank: Blank,
+    Truthy: Truthy,
+    Required: Required,
+    InstanceOf: InstanceOf,
+    SubclassOf: SubclassOf,
+    Then: Then,
+    If: If,
+    Length: Length,
+    Contains: Contains,
+    Each: Each,
+    validate: validate,
+    Pattern: Pattern
+  };
 
 }));

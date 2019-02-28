@@ -516,15 +516,6 @@ Special conditional validator.
 | validator | <code>\*</code> | 
 | thenClause | <code>\*</code> | 
 
-**Example**  
-```js
-var validations = {
-  foo: [If(Equals(1), Then({bar: [Equals(2)]}))]
-  }
-  passes = {foo: 1, bar: 2}
-  also_passes = {foo: 2, bar: 3}
-  fails = {foo: 1, bar: 3}
-```
 <a name="Each"></a>
 
 ## Each(validations)

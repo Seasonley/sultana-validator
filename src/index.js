@@ -118,8 +118,6 @@ function Equals(obj) {
 function Not(validator) {
   return function Not(value) {
     Validator.call(this)
-    errMsg = errMsg || 'failed validation'
-    notMsg = notMsg || 'failed validation'
     return !validator(value)
   }
 }
@@ -432,13 +430,6 @@ function Then(validation) {
     parameter to this function passes,
     then a second set of rules will be
     applied to the dictionary.
- @example
- var validations = {
-  foo: [If(Equals(1), Then({bar: [Equals(2)]}))]
-  }
-  passes = {foo: 1, bar: 2}
-  also_passes = {foo: 2, bar: 3}
-  fails = {foo: 1, bar: 3}
 */
 function If(validator, thenClause) {
   function If(value, dictionary) {
