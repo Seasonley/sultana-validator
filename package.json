@@ -39,7 +39,7 @@
     "lint": "eslint src test",
     "prepublish": "npm run build",
     "minify": "uglifyjs sultana-validator.js -o sultana-validator.min.js --compress --mangle --comments /Copyright/",
-    "build": "rollup --config rollup.config.js && npm run minify",
+    "build": "rollup --format umd --config rollup.config.js && npm run minify",
     "pretest": "npm run lint && npm run build",
     "test": "nyc mocha --reporter dot",
     "test:browser": "karma start",

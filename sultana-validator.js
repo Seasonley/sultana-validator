@@ -61,12 +61,9 @@ https://github.com/Seasonley/sultana-validator*/
     return [valid, errors];
   }
 
-  var errMsg = '',
-      notMsg = '';
-
   function Validator() {
-    errMsg = 'failed validation';
-    notMsg = 'failed validation';
+    this.errMsg = 'failed validation';
+    this.notMsg = 'failed validation';
   }
   /**
    @function Blank
@@ -89,9 +86,9 @@ https://github.com/Seasonley/sultana-validator*/
 
   function Blank(value) {
     Validator.call(this);
-    errMsg = 'must be an empty string';
-    notMsg = 'must not be an empty string';
-    return value === '';
+    this.errMsg = 'must be an empty string';
+    this.notMsg = 'must not be an empty string';
+    return !value;
   }
   /**
    @function Truthy
@@ -112,8 +109,8 @@ https://github.com/Seasonley/sultana-validator*/
 
   function Truthy(value) {
     Validator.call(this);
-    errMsg = 'must be True-equivalent value';
-    notMsg = 'must be False-equivalent value';
+    this.errMsg = 'must be True-equivalent value';
+    this.notMsg = 'must be False-equivalent value';
     return !!value;
   }
   /**
@@ -153,8 +150,8 @@ https://github.com/Seasonley/sultana-validator*/
 
   function Equals(obj) {
     var objJson = JSON.stringify(obj);
-    errMsg = "must be equal to ".concat(objJson);
-    notMsg = "must not be equal to ".concat(objJson);
+    this.errMsg = "must be equal to ".concat(objJson);
+    this.notMsg = "must not be equal to ".concat(objJson);
     return function Equals(value) {
       return value === obj;
     };
@@ -171,8 +168,6 @@ https://github.com/Seasonley/sultana-validator*/
   function Not(validator) {
     return function Not(value) {
       Validator.call(this);
-      errMsg = errMsg || 'failed validation';
-      notMsg = notMsg || 'failed validation';
       return !validator(value);
     };
   }
@@ -197,8 +192,8 @@ https://github.com/Seasonley/sultana-validator*/
   function In(collection) {
     return function In(value) {
       Validator.call(this);
-      errMsg = "must be one of ".concat(JSON.stringify(collection));
-      notMsg = "must not be one of ".concat(JSON.stringify(collection));
+      this.errMsg = "must be one of ".concat(JSON.stringify(collection));
+      this.notMsg = "must not be one of ".concat(JSON.stringify(collection));
       return collection.includes(value);
     };
   }
@@ -231,8 +226,8 @@ https://github.com/Seasonley/sultana-validator*/
   function InstanceOf(baseClass) {
     return function InstanceOf(value) {
       Validator.call(this);
-      errMsg = "must be an instance of ".concat(baseClass.name, " or its subclasses");
-      notMsg = "must not be an instance of ".concat(baseClass.name, " or its subclasses");
+      this.errMsg = "must be an instance of ".concat(baseClass.name, " or its subclasses");
+      this.notMsg = "must not be an instance of ".concat(baseClass.name, " or its subclasses");
       return value instanceof baseClass;
     };
   }
@@ -260,8 +255,8 @@ https://github.com/Seasonley/sultana-validator*/
   function SubclassOf(baseClass) {
     return function SubclassOf(subClass) {
       Validator.call(this);
-      errMsg = "must be a subclass of ".concat(baseClass.name);
-      notMsg = "must not be a subclass of ".concat(baseClass.name);
+      this.errMsg = "must be a subclass of ".concat(baseClass.name);
+      this.notMsg = "must not be a subclass of ".concat(baseClass.name);
       return subClass.prototype instanceof baseClass;
     };
   }
@@ -284,8 +279,8 @@ https://github.com/Seasonley/sultana-validator*/
 
   function Pattern(reg) {
     return function Pattern(value) {
-      errMsg = "must match regex ".concat(reg.toString());
-      notMsg = "must not match regex ".concat(reg.toString());
+      this.errMsg = "must match regex ".concat(reg.toString());
+      this.notMsg = "must not match regex ".concat(reg.toString());
       return reg.test(value);
     };
   }
@@ -313,8 +308,8 @@ https://github.com/Seasonley/sultana-validator*/
     var inclusive = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
     return function Range(value) {
       Validator.call(this);
-      errMsg = "must fall between ".concat(start, " and ").concat(end);
-      notMsg = "must not fall between ".concat(start, " and ").concat(end);
+      this.errMsg = "must fall between ".concat(start, " and ").concat(end);
+      this.notMsg = "must not fall between ".concat(start, " and ").concat(end);
 
       if (inclusive === true) {
         return start <= value && value <= end;
@@ -346,8 +341,8 @@ https://github.com/Seasonley/sultana-validator*/
     var inclusive = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     return function Range(value) {
       Validator.call(this);
-      errMsg = "must be greater than ".concat(lowerBound);
-      notMsg = "must not be greater than ".concat(lowerBound);
+      this.errMsg = "must be greater than ".concat(lowerBound);
+      this.notMsg = "must not be greater than ".concat(lowerBound);
 
       if (inclusive === true) {
         return lowerBound <= value;
@@ -379,8 +374,8 @@ https://github.com/Seasonley/sultana-validator*/
     var inclusive = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
     return function Range(value) {
       Validator.call(this);
-      errMsg = "must be less than ".concat(upperBound);
-      notMsg = "must not be less than ".concat(upperBound);
+      this.errMsg = "must be less than ".concat(upperBound);
+      this.notMsg = "must not be less than ".concat(upperBound);
 
       if (inclusive === true) {
         return value <= upperBound;
@@ -441,8 +436,8 @@ https://github.com/Seasonley/sultana-validator*/
 
     return function Length(value) {
       Validator.call(this);
-      errMsg = errMessage;
-      notMsg = notMessage;
+      this.errMsg = errMessage;
+      this.notMsg = notMessage;
 
       if (maximum) {
         return minimum <= value.length <= maximum;
@@ -470,8 +465,8 @@ https://github.com/Seasonley/sultana-validator*/
   function Contains(contained) {
     return function Contains(container) {
       Validator.call(this);
-      errMsg = "must contain ".concat(contained);
-      notMsg = "must not contain ".concat(contained);
+      this.errMsg = "must contain ".concat(contained);
+      this.notMsg = "must not contain ".concat(contained);
 
       if (container instanceof Array || typeof container === 'string') {
         return container.includes(contained);
@@ -576,6 +571,8 @@ https://github.com/Seasonley/sultana-validator*/
 
   function Each(validations) {
     return function Each(container) {
+      var _this = this;
+
       var errors = [],
           valid,
           err;
@@ -586,7 +583,7 @@ https://github.com/Seasonley/sultana-validator*/
             valid = v(item);
 
             if (!valid) {
-              errors.push("all values ".concat(errMsg));
+              errors.push("all values ".concat(_this.errMsg));
             }
           });
         });
@@ -685,7 +682,7 @@ https://github.com/Seasonley/sultana-validator*/
     try {
       valid = validator(dictionary[key]);
     } catch (error) {
-      valid = [false, errMsg];
+      valid = [false, validator.errMsg];
     }
 
     if (valid instanceof Array) {
@@ -703,7 +700,7 @@ https://github.com/Seasonley/sultana-validator*/
         errors[key].push(errs);
       }
     } else if (!valid) {
-      errors[key].push(errMsg || 'failed validation');
+      errors[key].push(this.errMsg);
     }
   }
   /**
