@@ -4,7 +4,7 @@
 
 [![NPM version][npm-image]][npm-url]
 [![Build Status][travis-image]][travis-url]
-[![Coverage Status](https://coveralls.io/repos/github/Seasonley/sultana-validator/badge.svg?branch=master)](https://coveralls.io/github/Seasonley/sultana-validator?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/Seasonley/sultana-validator/badge.svg)](https://coveralls.io/github/Seasonley/sultana-validator?branch=master)
 [![Downloads][downloads-image]][npm-url]
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FSeasonley%2Fsultana-validator.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2FSeasonley%2Fsultana-validator?ref=badge_shield)
 
