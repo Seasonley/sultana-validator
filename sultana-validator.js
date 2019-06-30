@@ -1,4 +1,4 @@
-/*sultana-validator v0.1.1
+/*sultana-validator v0.1.2
 A library for validating as same as validator.py
 MIT License Copyright (c) 2018 seasonley
 https://github.com/Seasonley/sultana-validator*/

@@ -1,4 +1,5 @@
 function template(strings, ...keys) {
+  /* istanbul ignore next */
   return (function templ(...values) {
     var dict = values[values.length - 1] || {}
     var result = [strings[0]]
@@ -11,6 +12,7 @@ function template(strings, ...keys) {
 }
 
 function ValidationResult(valid, errors) {
+  /* istanbul ignore next */
   return [valid, errors]
 }
 var errMsg = 'failed validation'
