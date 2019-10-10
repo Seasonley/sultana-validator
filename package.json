@@ -1,10 +1,13 @@
 {
   "name": "sultana-validator",
   "version": "1.0.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "description": "A library for validating as same as validator.py",
-  "main": "src/index.js",
+  "main": "src/index.ts",
   "files": [
-    "src/index.js",
+    "src/index.ts",
     "README.md",
     "LICENCE"
   ],
@@ -31,21 +34,44 @@
     "rollup": "^1.1.2",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-json": "^3.1.0",
-    "uglify-js": "^3.4.9"
+    "ts-loader": "^6.2.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.4",
+    "uglify-js": "^3.4.9",
+    "webpack": "^4.41.0",
+    "webpack-cli": "^3.3.9"
   },
   "scripts": {
-    "lint": "eslint src test",
     "prepublish": "npm run build",
-    "minify": "uglifyjs sultana-validator.js -o sultana-validator.min.js --compress --mangle --comments /Copyright/",
-    "build": "rollup --format umd --config rollup.config.js && npm run minify",
-    "pretest": "npm run lint && npm run build",
-    "test": "nyc mocha --reporter dot",
+    "build": "webpack",
+    "pretest": "npm run build",
+    "test": "nyc mocha -r ts-node/register test/* --reporter dot",
     "test:browser": "karma start",
     "coverage": "nyc --reporter=html --reporter=text --reporter=lcov mocha test/*.js",
-    "coveralls":"cat ./coverage/lcov.info | coveralls",
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
     "changelog": "conventional-changelog -p angular -i doc/CHANGELOG.md -s -r 0",
     "makedoc": "jsdoc2md src/index.js > doc/DOCUMENTATION.md",
     "doc": "npm run makedoc && npm run changelog"
+  },
+  "nyc": {
+    "include": [
+      "src/*.ts"
+    ],
+    "exclude": [
+      "*.d.ts"
+    ],
+    "extension": [
+      ".ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ],
+    "reporter": [
+      "text"
+    ],
+    "sourceMap": true,
+    "instrument": true,
+    "all": true
   },
   "repository": {
     "type": "git",
@@ -64,5 +90,8 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
+  },
+  "dependencies": {
+    "@types/mocha": "^5.2.7"
   }
 }

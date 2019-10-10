@@ -1,10 +1,10 @@
 const assert = require('assert')
 
-const {
+const  {
   In, Not, Range, Equals, Blank, Truthy, Required,
   InstanceOf, SubclassOf, GreaterThan, LessThan,
   Length, Pattern, Then, If, Contains, Each, validate,
-} = require('../src/index.js')
+} =require( '../src/index')
 
 class BaseClass { }
 class SubClass extends BaseClass { }
@@ -34,6 +34,7 @@ describe('TestValidator', () => {
   it('test_required_validator', () => {
     const validator = {
       truthiness: [Required],
+      // @ts-ignore
       falsiness: [],
     }
     const strValue = {
