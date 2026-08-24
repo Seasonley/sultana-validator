@@ -1,4 +1,4 @@
-# [ [-ิ_•ิ] sultana-validator](https://npmjs.org/package/sultana-validator)
+# [[-_•] sultana-validator](https://npmjs.org/package/sultana-validator)
 
 [![NPM](https://nodei.co/npm/sultana-validator.png)](https://npmjs.org/package/sultana-validator)
 
@@ -67,14 +67,11 @@ validate(rules, fails)
 
 [MIT](https://github.com/Seasonley/sultana-validator/blob/master/LICENSE)
 
-
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FSeasonley%2Fsultana-validator.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FSeasonley%2Fsultana-validator?ref=badge_large)
 
 ## Change Log
 
 <a href="https://github.com/Seasonley/sultana-validator/blob/master/doc/CHANGELOG.md">click here for more details.</a>
-
-
 
 [downloads-image]: http://img.shields.io/npm/dm/sultana-validator.svg
 [npm-url]: https://npmjs.org/package/sultana-validator
