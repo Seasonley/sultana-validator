@@ -42,7 +42,7 @@ var notMsg = 'failed validation'
 function Blank(value: string) {
   errMsg = 'must be an empty string'
   notMsg = 'must not be an empty string'
-  return !value
+  return value === ''
 }
 
 /**
@@ -79,7 +79,9 @@ function Truthy(value: string) {
 *  }
 */
 function Required(field: string, dictionary: any) {
-  return field in dictionary
+  /* Own-property check: `in` counts prototype-inherited keys (toString,
+     constructor, …) as present, which wrongly lets an empty object pass. */
+  return Object.prototype.hasOwnProperty.call(dictionary, field)
 }
 
 /**
@@ -100,9 +102,11 @@ function Required(field: string, dictionary: any) {
 */
 function Equals(obj: any) {
   const objJson = JSON.stringify(obj)
-  errMsg = `must be equal to ${objJson}`
-  notMsg = `must not be equal to ${objJson}`
   return function _Equals(value: any) {
+      /* Set at call time (not factory time) so `Not()` can read the correct
+         `notMsg` for the value that actually ran. */
+      errMsg = `must be equal to ${objJson}`
+      notMsg = `must not be equal to ${objJson}`
       return value === obj
   }
 }
@@ -115,9 +119,20 @@ function Equals(obj: any) {
 *    work with Required.
 */
 function Not(validator: any) {
-  return function _Not(value: any) {
-      return !validator(value)
+  function _Not(value: any) {
+      const result = !validator(value)
+      /* When a negated rule fails, the inner validator just ran and left
+         `notMsg` set to its "must not …" message — report that instead of the
+         stale positive `errMsg`. If the inner validator is itself a Not(),
+         the number of negations is even, so the positive message is correct;
+         only a single (odd) negation should surface the negated message. */
+      if (!result && (!validator || !validator.isNot)) {
+          errMsg = notMsg
+      }
+      return result
   }
+  _Not.isNot = true
+  return _Not
 }
 
 
@@ -223,7 +238,10 @@ function Pattern(reg: any) {
   return function _Pattern(value: any) {
       errMsg = `must match regex ${reg.toString()}`
       notMsg = `must not match regex ${reg.toString()}`
-      return reg.test(value)
+      /* `.test()` on a /g or /y regex advances `lastIndex`, making repeated
+         validations stateful and inconsistent. Test against a fresh clone. */
+      const clone = new RegExp(reg.source, reg.flags)
+      return clone.test(value)
   }
 }
 
@@ -248,9 +266,10 @@ function Pattern(reg: any) {
 */
 // @ts-ignore
 function Range(start: number, end: number, inclusive: boolean = true) {
+  const between = inclusive ? 'between' : 'strictly between'
   return function _Range(value: number): boolean {
-      errMsg = `must fall between ${start} and ${end}`
-      notMsg = `must not fall between ${start} and ${end}`
+      errMsg = `must fall ${between} ${start} and ${end}`
+      notMsg = `must not fall ${between} ${start} and ${end}`
       if (inclusive === true) {
           return start <= value && value <= end
       }
@@ -276,9 +295,10 @@ function Range(start: number, end: number, inclusive: boolean = true) {
 *  const fails = {field : 10}
 */
 function GreaterThan(lowerBound: number, inclusive = false) {
+  const bound = inclusive ? 'greater than or equal to' : 'greater than'
   return function _GreaterThan(value: number, ) {
-      errMsg = `must be greater than ${lowerBound}`
-      notMsg = `must not be greater than ${lowerBound}`
+      errMsg = `must be ${bound} ${lowerBound}`
+      notMsg = `must not be ${bound} ${lowerBound}`
       if (inclusive === true) {
           return lowerBound <= value
       }
@@ -304,9 +324,10 @@ function GreaterThan(lowerBound: number, inclusive = false) {
 *  const fails = {field : 10}
 */
 function LessThan(upperBound: number, inclusive = false) {
+  const bound = inclusive ? 'less than or equal to' : 'less than'
   return function _LessThan(value: number, ) {
-      errMsg = `must be less than ${upperBound}`
-      notMsg = `must not be less than ${upperBound}`
+      errMsg = `must be ${bound} ${upperBound}`
+      notMsg = `must not be ${bound} ${upperBound}`
       if (inclusive === true) {
           return value <= upperBound
       }
@@ -476,11 +497,15 @@ function If(validator: any, thenClause: any) {
 *  }
 */
 function Each(validations: any) {
-  return function _Each(container: any[]) {
+  function _Each(container: any[]): any {
       const errors: string[] = []
       let valid
       let err
+      const isCollection = container instanceof Array || typeof container === 'string'
       if (validations instanceof Array) {
+          if (!isCollection) {
+              return [false, ['must be a collection']]
+          }
           container.forEach((item) => {
               validations.forEach((v) => {
                   valid = v(item)
@@ -490,6 +515,9 @@ function Each(validations: any) {
               })
           })
       } else if (Object.prototype.toString.call(validations) === '[object Object]') {
+          if (!isCollection && (container === null || typeof container !== 'object')) {
+              return [false, ['must be a collection']]
+          }
           for (const [index, item] of Object.entries(container)) {
               [valid, err] = validate(validations, item)
               if (!valid) {
@@ -499,11 +527,12 @@ function Each(validations: any) {
       }
       return [errors.length === 0, errors]
   }
+  return _Each
 }
 
 function _validateListHelper(validation: any, dictionary: any, key: string, errors: any) {
   for (const v of validation[key]) {
-      if (key in dictionary) {
+      if (Object.prototype.hasOwnProperty.call(dictionary, key)) {
           if (Object.prototype.toString.call(v) === '[object Object]') {
               const [valid, nestedErrors] = validate(v, dictionary[key])
               if (!valid) {
@@ -512,7 +541,8 @@ function _validateListHelper(validation: any, dictionary: any, key: string, erro
               continue
           }
           if (v !== Required) {
-              if (v instanceof Function && 'isIf' in v.prototype) {
+              // Guard v.prototype: arrow functions (and some bound methods) lack it.
+              if (v instanceof Function && 'isIf' in (v.prototype ?? {})) {
                   const [conditional, dependent] = v(dictionary[key], dictionary)
                   if (conditional && Object.keys(dependent[1]).length > 0) {
                       errors[key].push(dependent[1])
@@ -540,7 +570,9 @@ function _validateAndStoreErrs(validator: any, dictionary: any, key: string, err
   try {
       valid = validator(dictionary[key])
   } catch (error) {
-      valid = [false, errMsg]
+      /* Never reuse the global errMsg here: it may hold a stale message set by a
+         previous field's validator. Report a neutral, field-scoped failure. */
+      valid = [false, 'failed validation']
   }
 
   if (valid instanceof Array) {
@@ -589,6 +621,16 @@ function validate(validation: any, dictionary: any) {
           if (v === Required) {
               if (!Required(key, dictionary)) {
                   errors[key] = ['must be present']
+              }
+          } else if (Object.prototype.toString.call(v) === '[object Object]') {
+              /* A bare (non-array) nested object rule: validate its own rules
+                 against the field value, like the array branch does. Skipped
+                 when the key is absent (optional). */
+              if (Object.prototype.hasOwnProperty.call(dictionary, key)) {
+                  const [valid, nestedErrors] = validate(v, dictionary[key])
+                  if (!valid) {
+                      errors[key].push(nestedErrors)
+                  }
               }
           } else {
               _validateAndStoreErrs(v, dictionary, key, errors)

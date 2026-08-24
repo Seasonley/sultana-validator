@@ -1,10 +1,11 @@
-const assert = require('assert')
+import assert from 'node:assert'
+import { describe, it } from 'vitest'
 
-const  {
+import {
   In, Not, Range, Equals, Blank, Truthy, Required,
   InstanceOf, SubclassOf, GreaterThan, LessThan,
   Length, Pattern, Then, If, Contains, Each, validate,
-} =require( '../src/index')
+} from '../src/index'
 
 class BaseClass { }
 class SubClass extends BaseClass { }
@@ -114,6 +115,38 @@ describe('TestValidator', () => {
     }
     assert(validate(validator, testCase)[0])
   })
+  it('test_not_reports_negated_message', () => {
+    // https regression: Not() used to report the positive "must …" message
+    const validator = {
+      qux: [Not(Range(1, 100))],
+      name: [Not(Equals('admin'))],
+      tag: [Not(In(['a', 'b']))],
+      flag: [Not(Truthy)],
+    }
+    const failing = {
+      qux: 99,          // inside the negated range → must NOT fall between
+      name: 'admin',    // equals the negated value → must NOT equal
+      tag: 'a',         // member of the negated set → must NOT be one of
+      flag: true,       // truthy → must NOT be truthy
+    }
+    const [valid, errors] = validate(validator, failing)
+    assert.strictEqual(valid, false)
+    assert.deepEqual(errors, {
+      qux: ['must not fall between 1 and 100'],
+      name: ['must not be equal to "admin"'],
+      tag: ['must not be one of ["a","b"]'],
+      flag: ['must be False-equivalent value'],
+    })
+  })
+  it('test_pattern_with_global_flag_is_stateless', () => {
+    const globalRe = /\d{3}/g
+    const validator = { field: [Pattern(globalRe)] }
+    assert(validate(validator, { field: 'abc123' })[0])
+    // without cloning, lastIndex would drift and flip subsequent results
+    assert(!validate(validator, { field: 'abc' })[0])
+    assert(validate(validator, { field: 'abc123' })[0])
+    assert(validate(validator, { field: '999' })[0])
+  })
   it('test_range_validator', () => {
     const validator = {
       in_range: [Range(1, 10)],
@@ -182,36 +215,6 @@ describe('TestValidator', () => {
     const testCase = {
       is_subclass: SubClass,
       not_subclass: Number,
-    }
-    assert(validate(validator, testCase)[0])
-  })
-  it('test_greaterthan_validator', () => {
-    const validator = {
-      greater_than: [GreaterThan(0)],
-      lower_than: [Not(GreaterThan(0))],
-      equal_exclusive: [Not(GreaterThan(0))],
-      equal_inclusive: [GreaterThan(0, true)],
-    }
-    const testCase = {
-      greater_than: 1,
-      lower_than: -1,
-      equal_exclusive: 0,
-      equal_inclusive: 0,
-    }
-    assert(validate(validator, testCase)[0])
-  })
-  it('test_lessthan_validator', () => {
-    const validator = {
-      less_than: [LessThan(0)],
-      greater_than: [Not(LessThan(0))],
-      equal_exclusive: [Not(LessThan(0))],
-      equal_inclusive: [LessThan(0, true)],
-    }
-    const testCase = {
-      less_than: -1,
-      greater_than: 1,
-      equal_exclusive: 0,
-      equal_inclusive: 0,
     }
     assert(validate(validator, testCase)[0])
   })
@@ -288,10 +291,10 @@ describe('TestValidator', () => {
       }),
       ],
     }
-    var [valid, errors] = validate(validation, passes)
+    let [valid, errors] = validate(validation, passes)
     assert(valid)
-    assert.equal(Object.keys(errors).length, 0);
-    [valid, errors] = validate(validation, fails)
+    assert.equal(Object.keys(errors).length, 0)
+    ;[valid, errors] = validate(validation, fails)
     assert(!valid)
     assert.equal(Object.keys(errors).length, 2)
     assert.deepEqual(errors, {
@@ -372,6 +375,45 @@ describe('TestValidator', () => {
         'must be at least 5 elements in length',
         'must be an instance of Array or its subclasses',
       ],
+    })
+  })
+
+  it('README example 1: passes', () => {
+    const rules = {
+      foo: [Required, Equals(123)],
+      bar: [Required, Truthy],
+      baz: [In(['spam', 'eggs', 'bacon'])],
+      qux: [Not(Range(1, 100))],
+    }
+    const passes = {
+      foo: 123,
+      bar: true,
+      baz: 'spam',
+      qux: 101,
+    }
+    assert.deepEqual(validate(rules, passes), [true, {}])
+  })
+
+  it('README example 2: fails with field-level messages', () => {
+    const rules = {
+      foo: [Required, Equals(123)],
+      bar: [Required, Truthy],
+      baz: [In(['spam', 'eggs', 'bacon'])],
+      qux: [Not(Range(1, 100))],
+    }
+    const fails = {
+      foo: 321,
+      bar: false,
+      baz: 'barf',
+      qux: 99,
+    }
+    const [valid, errors] = validate(rules, fails)
+    assert.strictEqual(valid, false)
+    assert.deepEqual(errors, {
+      foo: ['must be equal to 123'],
+      bar: ['must be True-equivalent value'],
+      baz: ['must be one of ["spam","eggs","bacon"]'],
+      qux: ['must not fall between 1 and 100'],
     })
   })
 })

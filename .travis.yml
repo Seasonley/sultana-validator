@@ -1,5 +1,6 @@
 language: node_js
-node_js: "8.12.0"
+node_js:
+  - "20"
 install: npm install
-script: npm run test 
-after_success: npm run coverage && npm run coveralls
+script: npm test
+after_success: npm run coverage
